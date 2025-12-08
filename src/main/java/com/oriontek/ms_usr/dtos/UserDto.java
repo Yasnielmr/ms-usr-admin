@@ -11,6 +11,7 @@ import java.util.List;
  * @version 1.0.0, 07-12-2025
  */
 public record UserDto(
+        Long id,
         String name,
         String lastName,
         String email,

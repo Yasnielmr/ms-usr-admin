@@ -3,6 +3,8 @@ package com.oriontek.ms_usr.services.contracts;
 import com.oriontek.ms_usr.dtos.UserDto;
 import com.oriontek.ms_usr.dtos.UserRequest;
 
+import java.util.List;
+
 /**
  * UserService.
  *
@@ -18,4 +20,26 @@ public interface UserService {
      * @return {@link UserDto}
      */
     UserDto createUser(UserRequest userRequest);
+
+    /**
+     * Metodo para buscar el usuario en la base de datos segun su ID.
+     *
+     * @param id {@link Long}
+     * @return {@link UserDto}
+     */
+    UserDto getUserById(Long id);
+
+    /**
+     * Metodo para mostrar un listado de usuarios.
+     *
+     * @return list {@link UserDto}
+     */
+    List<UserDto> getUsers();
+
+    /**
+     * Metodo para eliminar un usuario de la base de datos.
+     *
+     * @param id {@link Long}
+     */
+    void deleteUser(Long id);
 }

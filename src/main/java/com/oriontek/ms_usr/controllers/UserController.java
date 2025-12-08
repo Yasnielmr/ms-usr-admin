@@ -1,13 +1,13 @@
 package com.oriontek.ms_usr.controllers;
 
+import com.oriontek.ms_usr.dtos.UserDto;
 import com.oriontek.ms_usr.dtos.UserRequest;
 import com.oriontek.ms_usr.services.contracts.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 /**
  * UserController.
@@ -26,5 +26,23 @@ public class UserController {
     public ResponseEntity<?> createUser(@RequestBody final UserRequest request) {
         final var user = this.userService.createUser(request);
         return ResponseEntity.status(201).body(user);
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<UserDto> getUserById(@PathVariable Long id) {
+        UserDto response = userService.getUserById(id);
+        return ResponseEntity.ok(response);
+    }
+
+    @GetMapping
+    public ResponseEntity<List<UserDto>> getAllUsers() {
+        List<UserDto> users = userService.getUsers();
+        return ResponseEntity.ok(users);
+    }
+
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
+        userService.deleteUser(id);
+        return ResponseEntity.noContent().build();
     }
 }

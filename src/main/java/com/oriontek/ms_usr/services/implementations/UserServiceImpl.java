@@ -12,6 +12,7 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.NoSuchElementException;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
@@ -35,13 +36,41 @@ public class UserServiceImpl implements UserService {
     @Override
     public UserDto createUser(UserRequest userRequest) {
 
-        final var pattern = Pattern.compile(emailRegex);
-        final var matcher = pattern.matcher(userRequest.email());
-        if (!matcher.matches()) {
-            throw new IllegalArgumentException("Formato de correo invalido");
-        }
+        this.validateEmail(userRequest.email());
         final var user = this.userRepository.save(this.getUserEntity(userRequest));
         return this.getUserResponse(user);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public UserDto getUserById(Long id) {
+
+        final var user = this.userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado en la base de datos"));
+        return this.getUserResponse(user);
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public List<UserDto> getUsers() {
+        return this.userRepository.findAll()
+                .stream().map(this::getUserResponse)
+                .collect(Collectors.toList());
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    @Override
+    public void deleteUser(Long id) {
+        if (!userRepository.existsById(id)) {
+            throw new NoSuchElementException("Usuario no encontrado en la base de datos para ser eliminado");
+        }
+        userRepository.deleteById(id);
     }
 
     /**
@@ -77,6 +106,7 @@ public class UserServiceImpl implements UserService {
     private UserDto getUserResponse(User userEntity) {
 
         return new UserDto(
+                userEntity.getId(),
                 userEntity.getName(),
                 userEntity.getLastName(),
                 userEntity.getEmail(),
@@ -115,6 +145,19 @@ public class UserServiceImpl implements UserService {
         return addresses.stream()
                 .map(this::getAddress)
                 .toList();
+    }
+
+    /**
+     * Metodo para validar el email del usuario.
+     *
+     * @param email {@link String}
+     */
+    private void validateEmail(String email) {
+        final var pattern = Pattern.compile(emailRegex);
+        final var matcher = pattern.matcher(email);
+        if (!matcher.matches()) {
+            throw new IllegalArgumentException("Formato de correo invalido");
+        }
     }
 
 }
