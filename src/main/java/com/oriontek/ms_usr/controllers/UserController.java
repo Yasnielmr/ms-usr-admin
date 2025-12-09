@@ -3,6 +3,7 @@ package com.oriontek.ms_usr.controllers;
 import com.oriontek.ms_usr.dtos.UserDto;
 import com.oriontek.ms_usr.dtos.UserRequest;
 import com.oriontek.ms_usr.services.contracts.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -44,5 +45,11 @@ public class UserController {
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PutMapping("/{id}")
+    public ResponseEntity<UserDto> updateUser(@PathVariable Long id, @Valid @RequestBody UserRequest request) {
+        UserDto updated = userService.updateUser(id, request);
+        return ResponseEntity.ok(updated);
     }
 }

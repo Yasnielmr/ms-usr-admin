@@ -73,6 +73,30 @@ public class UserServiceImpl implements UserService {
         userRepository.deleteById(id);
     }
 
+    @Override
+    public UserDto updateUser(Long id, UserRequest request) {
+
+        validateEmail(request.email());
+
+        final var user = userRepository.findById(id)
+                .orElseThrow(() -> new NoSuchElementException("Usuario no encontrado en la base de datos"));
+
+        user.setName(request.name());
+        user.setLastName(request.lastName());
+        user.setEmail(request.email());
+        user.setPhone(request.phone());
+
+        request.address().forEach(a -> {
+            final var address = new Address();
+            address.setCity(a.city());
+            address.setPostalCode(a.postalCode());
+            address.setStreet(a.street());
+            address.setSector(a.sector());
+        });
+        final var updated = userRepository.save(user);
+        return this.getUserResponse(updated);
+    }
+
     /**
      * Metodo para registrar el usuario en la base de datos.
      *
@@ -124,13 +148,7 @@ public class UserServiceImpl implements UserService {
      * @return {@link AddressDto}
      */
     private AddressDto getAddress(Address address) {
-
-        return new AddressDto(
-                address.getStreet(),
-                address.getSector(),
-                address.getPostalCode(),
-                address.getCity()
-        );
+        return new AddressDto(address.getStreet(), address.getPostalCode(), address.getCity(), address.getSector());
     }
 
     /**
@@ -159,5 +177,4 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Formato de correo invalido");
         }
     }
-
 }

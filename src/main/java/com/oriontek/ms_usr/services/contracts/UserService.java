@@ -42,4 +42,13 @@ public interface UserService {
      * @param id {@link Long}
      */
     void deleteUser(Long id);
+
+    /**
+     * Metodo para actualizar usuario.
+     *
+     * @param id      {@link Long}
+     * @param request {@link UserRequest}
+     * @return {@link UserDto}
+     */
+    UserDto updateUser(Long id, UserRequest request);
 }
